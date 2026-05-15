@@ -1,0 +1,1517 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Тест: какой размер у моего эго</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1f2523;
+      --muted: #657063;
+      --paper: #f4e9d2;
+      --surface: #fff8e8;
+      --line: #d8c8ad;
+      --cave: #202336;
+      --stone: #3d4058;
+      --accent: #496b5b;
+      --accent-soft: #e5efe8;
+      --torch: #ffbf4d;
+      --gold: #8f6a38;
+      --rose: #c66b5a;
+      --shadow: 0 18px 46px rgba(8, 10, 22, 0.22);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 11% 18%, rgba(56, 219, 255, 0.34), transparent 15rem),
+        radial-gradient(circle at 78% 12%, rgba(193, 103, 255, 0.24), transparent 18rem),
+        radial-gradient(circle at 18% 86%, rgba(255, 170, 104, 0.18), transparent 18rem),
+        linear-gradient(145deg, #211532, #241f47 46%, #10121f);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(244, 233, 210, 0.16);
+      background: rgba(23, 26, 42, 0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 12px 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 0;
+      color: var(--paper);
+    }
+
+    .progress-wrap {
+      min-width: min(340px, 42vw);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: #e4d8be;
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(244, 233, 210, 0.18);
+    }
+
+    .progress span {
+      display: block;
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--torch));
+      transition: width 180ms ease;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .intro {
+      max-width: none;
+      padding: 22px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(244, 233, 210, 0.16);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 78% 20%, rgba(255, 191, 77, 0.26), transparent 18rem),
+        linear-gradient(135deg, rgba(61, 64, 88, 0.94), rgba(32, 35, 54, 0.98));
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      max-width: 760px;
+      font-size: clamp(38px, 6vw, 76px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      color: var(--paper);
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 840px;
+      color: #eadfc8;
+      font-size: 17px;
+      line-height: 1.48;
+    }
+
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .preview-item {
+      border: 1px solid rgba(244, 233, 210, 0.18);
+      border-radius: 20px;
+      background: rgba(244, 233, 210, 0.08);
+      padding: 12px;
+    }
+
+    .preview-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffe2a5;
+    }
+
+    .preview-item span {
+      color: #e0d5bc;
+      font-size: 15px;
+      line-height: 1.42;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .layout.hidden {
+      display: none;
+    }
+
+    .questions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .main-column {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .question {
+      border: 1px solid rgba(31, 37, 35, 0.08);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .question.missing {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 4px rgba(198, 107, 90, 0.22);
+    }
+
+    .question-head {
+      padding: 14px 16px 11px;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+      border-bottom: 1px solid rgba(216, 200, 173, 0.55);
+    }
+
+    .number {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #2d2a1d;
+      background: var(--torch);
+      font-weight: 700;
+    }
+
+    .question h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.28;
+      letter-spacing: 0;
+      color: #22382f;
+      font-weight: 800;
+    }
+
+    .question-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .answers {
+      display: grid;
+      gap: 0;
+    }
+
+    .answer {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 10px 16px;
+      min-height: 44px;
+      border-top: 1px solid rgba(216, 200, 173, 0.42);
+      cursor: pointer;
+    }
+
+    .answer:first-child {
+      border-top: 0;
+    }
+
+    .answer:hover {
+      background: #fff0c8;
+    }
+
+    .answer.selected {
+      background: #fff0c8;
+      box-shadow: inset 5px 0 0 var(--torch);
+    }
+
+    .answer input {
+      width: 18px;
+      height: 18px;
+      margin: 3px 0 0;
+      accent-color: var(--accent);
+    }
+
+    .answer-text {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      color: #3f463f;
+      font-size: 14px;
+      line-height: 1.38;
+    }
+
+    .answer strong {
+      flex: 0 0 auto;
+      margin-right: 0;
+      font-size: 14px;
+      color: #2d473f;
+    }
+
+    .answer-copy {
+      display: inline;
+      color: #3f463f;
+      font-size: 14px;
+      line-height: 1.38;
+    }
+
+    .side {
+      position: sticky;
+      top: 78px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .panel {
+      border: 1px solid rgba(31, 37, 35, 0.08);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      color: var(--ink);
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: 0;
+      color: var(--ink);
+    }
+
+    .panel p {
+      margin: 0;
+      color: #4f584f;
+      line-height: 1.42;
+    }
+
+    .scale {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .scale-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      color: #3d4d5b;
+    }
+
+    .badge {
+      display: inline-grid;
+      place-items: center;
+      min-width: 42px;
+      height: 28px;
+      border-radius: 999px;
+      color: #0d4f4f;
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .completion {
+      border: 1px solid rgba(31, 37, 35, 0.08);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      color: var(--ink);
+    }
+
+    .completion h2 {
+      margin: 0 0 8px;
+      font-size: 21px;
+      letter-spacing: 0;
+    }
+
+    .completion p {
+      margin: 0;
+      color: #4f584f;
+      line-height: 1.42;
+    }
+
+    button {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      color: #241f17;
+      background: var(--torch);
+    }
+
+    .secondary {
+      color: var(--ink);
+      border-color: var(--line);
+      background: var(--paper);
+    }
+
+    .primary:hover,
+    .secondary:hover {
+      filter: brightness(0.97);
+    }
+
+    .result {
+      display: none;
+      border: 1px solid rgba(31, 37, 35, 0.08);
+      border-radius: 26px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      margin-top: 0;
+      overflow: hidden;
+      scroll-margin-top: 112px;
+    }
+
+    .result.visible {
+      display: block;
+      min-height: calc(100vh - 112px);
+    }
+
+    .result-art {
+      min-height: 0;
+      border-radius: 22px;
+      border: 1px solid rgba(31, 37, 35, 0.10);
+      background:
+        radial-gradient(circle at 50% 12%, rgba(255, 191, 77, 0.26), transparent 9rem),
+        linear-gradient(180deg, #3d4058, #202336);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dragon-window {
+      position: relative;
+      aspect-ratio: 1672 / 941;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 55% 74%, rgba(255, 201, 111, 0.34), transparent 12rem),
+        linear-gradient(145deg, #211532, #111421);
+    }
+
+    .dragon-window::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(9, 8, 18, 0.08), transparent 32%, rgba(9, 8, 18, 0.12)),
+        radial-gradient(circle at 50% 78%, transparent 38%, rgba(9, 8, 18, 0.26));
+    }
+
+    .dragon-window img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .result-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 20px;
+      background:
+        radial-gradient(circle at 82% 20%, rgba(255, 191, 77, 0.34), transparent 12rem),
+        linear-gradient(90deg, #e4efde, #fff0c8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.18;
+      letter-spacing: 0;
+      color: var(--ink);
+    }
+
+    .score {
+      text-align: right;
+      font-weight: 700;
+      color: #3d3b2e;
+    }
+
+    .score strong {
+      display: block;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--gold);
+    }
+
+    .result-body {
+      padding: 18px 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .result-body p {
+      margin: 0;
+      color: #33443a;
+    }
+
+    .result-section {
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-section h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+      color: #6d4824;
+      font-weight: 800;
+    }
+
+    .result-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #33443a;
+    }
+
+    .result-list li {
+      margin: 5px 0;
+    }
+
+    .result-note {
+      border-left: 4px solid var(--gold);
+      padding: 10px 0 10px 14px;
+      color: #4f4331;
+      background: #fff1cd;
+    }
+
+    .result-scale {
+      border: 1px solid rgba(31, 37, 35, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      background: #f8edd4;
+    }
+
+    .result-scale h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+      color: #6d4824;
+      font-weight: 800;
+    }
+
+    .book-path {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding-left: 20px;
+      color: #33443a;
+    }
+
+    .zones {
+      display: grid;
+      gap: 10px;
+    }
+
+    .zone-row {
+      display: grid;
+      grid-template-columns: 150px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: #33443a;
+      font-size: 14px;
+    }
+
+    .zone-row strong {
+      color: #243a31;
+      font-weight: 800;
+    }
+
+    .zone-track {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #ded2bd;
+    }
+
+    .zone-track span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--torch));
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      color: #7d2733;
+      background: #fde5dd;
+      font-size: 14px;
+    }
+
+    .error.visible {
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .topbar-inner,
+      .layout,
+      .result-head,
+      .preview,
+      .zone-row {
+        grid-template-columns: 1fr;
+      }
+
+      .progress-wrap {
+        min-width: 0;
+      }
+
+      .side {
+        position: static;
+        order: -1;
+      }
+
+      .score {
+        text-align: left;
+      }
+
+      .zone-row {
+        gap: 5px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .topbar,
+      .side,
+      .actions,
+      .error {
+        display: none !important;
+      }
+
+      main {
+        width: 100%;
+        padding: 0;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .question,
+      .result {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">Пещера эго</div>
+      <div class="progress-wrap" aria-label="Прогресс прохождения">
+        <div class="progress-meta">
+          <span id="answeredText">0 из 15 отвечено</span>
+        </div>
+        <div class="progress"><span id="progressBar"></span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Пещера эго</h1>
+      <p class="lead">Короткий самотест по мотивам книги Райана Холидея «Эго - это враг». В книге эго — не просто “самомнение”, а сила, которая заставляет защищать образ себя вместо работы, обучения, трезвости и внутреннего равновесия.</p>
+      <div class="preview" aria-label="Зачем проходить тест">
+        <div class="preview-item">
+          <strong>Зачем проходить</strong>
+          <span>Чтобы заметить, где эго незаметно меняет фокус: с результата на правоту, с обучения на защиту, с дела на признание.</span>
+        </div>
+        <div class="preview-item">
+          <strong>Что здесь называется эго</strong>
+          <span>Это не уверенность и не амбиции. Проблема начинается там, где хочется выглядеть сильным больше, чем становиться сильнее.</span>
+        </div>
+        <div class="preview-item">
+          <strong>Почему это важно</strong>
+          <span>Эго искажает реальность: критика звучит как нападение, успех усыпляет, неудача становится личной драмой.</span>
+        </div>
+        <div class="preview-item">
+          <strong>Если зацепит</strong>
+          <span>Тест — только вход в пещеру. Книга глубже разбирает три состояния: стремление, успех и неудачу.</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="main-column">
+        <form id="testForm" class="questions" novalidate></form>
+        <section class="completion" id="completion">
+        <h2>Перед зеркалом</h2>
+        <p id="completionText">Ответьте на все вопросы, затем появится итоговый результат и зоны внимания.</p>
+        <div class="actions">
+          <button class="primary" id="submitBtn" type="button">Посмотреть в зеркало</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side" aria-label="Подсказка и шкала результатов">
+        <section class="panel">
+          <h2>Как отвечать</h2>
+          <p>Выберите один вариант в каждом вопросе. Лучше отвечать по обычному поведению в стрессе, а не по идеальному образу себя.</p>
+          <div class="error" id="errorBox">В пещере осталось несколько темных углов. Ответьте на подсвеченные вопросы.</div>
+        </section>
+
+        <section class="panel">
+          <h2>Перед началом</h2>
+          <p>В тесте нет правильных ответов. Низкий балл не означает “идеальность”: он лишь показывает, что в этой ситуации эго меньше вмешивается в реакцию.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Конфиденциальность</h2>
+          <p>Страница считает результат прямо в браузере. Ответы никуда не отправляются и не сохраняются. Тест не предназначен для оценки сотрудников или сравнения людей между собой.</p>
+        </section>
+      </aside>
+    </div>
+
+    <section class="result" id="result" aria-live="polite">
+      <div class="result-head">
+        <h2 id="resultTitle"></h2>
+        <div class="score"><strong id="resultScore"></strong><span>из 60 баллов</span></div>
+      </div>
+      <div class="result-body">
+        <div class="result-art" id="resultArt" aria-label="Символическая сцена результата"></div>
+        <p id="resultDescription"></p>
+        <p id="resultStrength"></p>
+        <p id="resultRisk"></p>
+        <div class="result-note" id="resultNote"></div>
+        <div class="result-section">
+          <h3>Зоны внимания</h3>
+          <p id="zonesSummary"></p>
+          <div class="zones" id="zones"></div>
+        </div>
+        <div class="result-section">
+          <h3>Что попробовать дальше</h3>
+          <ul class="result-list" id="resultNextSteps"></ul>
+        </div>
+        <div class="result-section">
+          <h3>Что почитать в книге</h3>
+          <p>Если после теста какая-то тема откликнулась, в книге можно идти не подряд, а от своего вопроса.</p>
+          <ul class="book-path">
+            <li>Критика, ученичество, желание доказать себя - часть «Стремление».</li>
+            <li>Признание, контроль, гордыня после результата - часть «Успех».</li>
+            <li>Неудача, несправедливость, живое и мертвое время - часть «Неудача».</li>
+          </ul>
+        </div>
+        <div class="result-note" id="resultFinalThought"></div>
+        <div class="result-scale">
+          <h3>Шкала результатов</h3>
+          <div class="scale">
+            <div class="scale-row"><span class="badge">I</span><span>0-10: Эго почти не мешает</span></div>
+            <div class="scale-row"><span class="badge">II</span><span>11-22: Эго в рабочем размере</span></div>
+            <div class="scale-row"><span class="badge">III</span><span>23-36: Эго иногда перехватывает управление</span></div>
+            <div class="scale-row"><span class="badge">IV</span><span>37-49: Эго часто искажает решения</span></div>
+            <div class="scale-row"><span class="badge">V</span><span>50-60: Эго становится главным фильтром реальности</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="secondary" id="resetBtn" type="button">Пройти заново</button>
+          <button class="secondary" id="printBtn" type="button">Распечатать или сохранить в PDF</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const zoneLabels = {
+      learning: "Обучаемость и критика",
+      status: "Признание и статус",
+      control: "Контроль и делегирование",
+      conflict: "Конфликты и справедливость",
+      resilience: "Успех и неудача"
+    };
+
+    const questions = [
+      {
+            "zone": "learning",
+            "text": "Вам дают критическую обратную связь по работе. Что ближе к вашей реакции?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 2,
+                        "text": "В моменте защищаюсь, но позже разбираю замечание спокойнее."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 0,
+                        "text": "Уточняю, что улучшить, и забираю рабочие выводы."
+                  },
+                  {
+                        "label": "В",
+                        "points": 4,
+                        "text": "Воспринимаю это как недооценку и долго возвращаюсь к разговору."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 1,
+                        "text": "Сначала неприятно, но я быстро отделяю эмоцию от сути."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 3,
+                        "text": "Начинаю объяснять контекст и почему все было сложнее."
+                  }
+            ]
+      },
+      {
+            "zone": "learning",
+            "text": "Привычный способ работы перестал давать результат. Как вы действуете?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 0,
+                        "text": "Смотрю на факты и готов(а) пересобрать способ работы."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 4,
+                        "text": "Защищаю старый метод: отказаться от него трудно."
+                  },
+                  {
+                        "label": "В",
+                        "points": 1,
+                        "text": "Если факты убедительны, меняю решение без большой драмы."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 3,
+                        "text": "Сначала усиливаю старый подход: больше контроля и давления."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 2,
+                        "text": "Понимаю, что нужен другой подход, но внутренне сопротивляюсь."
+                  }
+            ]
+      },
+      {
+            "zone": "learning",
+            "text": "В новой задаче вы пока не знаете, как сделать ее хорошо. Что ближе?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 4,
+                        "text": "Трудно показывать незнание: кажется, это ударит по авторитету."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 1,
+                        "text": "Сначала разбираюсь самостоятельно, потом прошу помощи."
+                  },
+                  {
+                        "label": "В",
+                        "points": 3,
+                        "text": "Стараюсь выглядеть уверенно, даже если внутри много вопросов."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 2,
+                        "text": "Тяну с вопросами, чтобы не выглядеть некомпетентно."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 0,
+                        "text": "Спокойно признаю пробел и быстро ищу, где научиться."
+                  }
+            ]
+      },
+      {
+            "zone": "status",
+            "text": "Вы вложились в результат, но признание получил другой человек. Что ближе?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 1,
+                        "text": "Осадок бывает, но если дело выиграло, я не застреваю."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 3,
+                        "text": "Меньше хочется помогать, если мой вклад не замечают."
+                  },
+                  {
+                        "label": "В",
+                        "points": 2,
+                        "text": "Важно, чтобы вклад понимали хотя бы ключевые люди."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 0,
+                        "text": "Спокойно принимаю, что часть работы остается за кадром."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 4,
+                        "text": "Хочется восстановить справедливость и обозначить свой вклад."
+                  }
+            ]
+      },
+      {
+            "zone": "status",
+            "text": "Вы говорите о проекте, который еще не доведен до результата. Как это выглядит?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 3,
+                        "text": "Важно заранее показать масштаб идеи и свой уровень."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 2,
+                        "text": "Могу увлечься замыслом, но не выдаю план за результат."
+                  },
+                  {
+                        "label": "В",
+                        "points": 0,
+                        "text": "Сначала делаю существенную часть, потом говорю увереннее."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 4,
+                        "text": "Говорю о будущем результате так, будто он почти уже есть."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 1,
+                        "text": "Рассказываю, когда это помогает синхронизировать ожидания."
+                  }
+            ]
+      },
+      {
+            "zone": "status",
+            "text": "Есть полезная работа, которая поможет другим, но почти не будет заметна. Что выберете?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 2,
+                        "text": "Помогу, но буду ждать, что вклад хотя бы заметят."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 0,
+                        "text": "Сделаю, если это помогает общему результату."
+                  },
+                  {
+                        "label": "В",
+                        "points": 4,
+                        "text": "Трудно вкладываться там, где не видно моего авторства."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 1,
+                        "text": "Могу сделать, если понимаю, зачем это нужно."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 3,
+                        "text": "Скорее выберу более заметную задачу."
+                  }
+            ]
+      },
+      {
+            "zone": "control",
+            "text": "Сотрудник делает задачу не вашим способом. Что вы обычно делаете?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 0,
+                        "text": "Если стандарт понятен, даю человеку выбрать способ."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 4,
+                        "text": "Вмешиваюсь в детали, иначе тревожно за результат."
+                  },
+                  {
+                        "label": "В",
+                        "points": 1,
+                        "text": "Задаю рамку качества, но не заменяю собой исполнителя."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 3,
+                        "text": "Могу забрать задачу или вести ее вручную."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 2,
+                        "text": "Смотрю на риски, но все равно хочется поправить ход работы."
+                  }
+            ]
+      },
+      {
+            "zone": "control",
+            "text": "В команде случилась ошибка. Какая первая реакция ближе?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 4,
+                        "text": "Думаю, что без моего контроля люди расслабляются."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 1,
+                        "text": "Сначала неприятно, потом перевожу разговор в причины."
+                  },
+                  {
+                        "label": "В",
+                        "points": 3,
+                        "text": "Хочется ужесточить контроль."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 2,
+                        "text": "Раздражаюсь, но не хочу скатываться в поиск виноватого."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 0,
+                        "text": "Ищу, где не хватило ясности, стандарта или обучения."
+                  }
+            ]
+      },
+      {
+            "zone": "control",
+            "text": "День уходит на срочные пожары, а стратегические решения откладываются. Что ближе?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 1,
+                        "text": "Иногда проваливаюсь в срочное, но возвращаю фокус."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 3,
+                        "text": "Влетаю в пожары: там быстро видна моя полезность."
+                  },
+                  {
+                        "label": "В",
+                        "points": 2,
+                        "text": "Понимаю, что надо делегировать, но откладываю это."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 0,
+                        "text": "Отделяю свою роль от того, где нужны правила и ответственные."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 4,
+                        "text": "Трудно отпустить мелочи: без меня качество просядет."
+                  }
+            ]
+      },
+      {
+            "zone": "conflict",
+            "text": "В споре кажется, что правда на вашей стороне. Что чаще происходит?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 3,
+                        "text": "Спор становится принципиальным, даже если цена растет."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 2,
+                        "text": "Иногда увлекаюсь доказательством, но потом могу остановиться."
+                  },
+                  {
+                        "label": "В",
+                        "points": 0,
+                        "text": "Проверяю, что важнее: правота или дело и отношения."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 4,
+                        "text": "Важно, чтобы человек признал мою правоту."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 1,
+                        "text": "Могу говорить жестче, но держу фокус на результате."
+                  }
+            ]
+      },
+      {
+            "zone": "conflict",
+            "text": "Ситуация кажется несправедливой к вам. Как вы с этим обходитесь?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 2,
+                        "text": "Нужно время, чтобы перестать спорить с тем, что произошло."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 0,
+                        "text": "Признаю эмоцию и спрашиваю, что теперь зависит от меня."
+                  },
+                  {
+                        "label": "В",
+                        "points": 4,
+                        "text": "Несправедливость выбивает и вызывает желание доказать или наказать."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 1,
+                        "text": "Обида бывает, но я не даю ей управлять решением."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 3,
+                        "text": "Долго возвращаюсь к ситуации и ищу, как восстановить баланс."
+                  }
+            ]
+      },
+      {
+            "zone": "conflict",
+            "text": "Вы видите, что продолжение конфликта сделает хуже. Что вероятнее?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 0,
+                        "text": "Останавливаюсь, даже если внутри хочется ответить."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 4,
+                        "text": "Иду до конца, а последствия оцениваю уже после пика."
+                  },
+                  {
+                        "label": "В",
+                        "points": 1,
+                        "text": "Беру паузу, если разговор уже не помогает делу."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 3,
+                        "text": "Продолжаю давить, иначе это похоже на слабость."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 2,
+                        "text": "Иногда останавливаюсь поздно, но уже замечаю момент перегиба."
+                  }
+            ]
+      },
+      {
+            "zone": "resilience",
+            "text": "Проект не дал результата, хотя вы много вложили. Что дальше?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 4,
+                        "text": "Неудача ощущается как удар по личности и репутации."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 1,
+                        "text": "Восстанавливаюсь и разбираю, что улучшить в следующий раз."
+                  },
+                  {
+                        "label": "В",
+                        "points": 3,
+                        "text": "Долго думаю, кто недооценил, помешал или поступил несправедливо."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 2,
+                        "text": "Проседаю эмоционально, но постепенно перевожу это в работу."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 0,
+                        "text": "Проверяю свои стандарты и забираю уроки."
+                  }
+            ]
+      },
+      {
+            "zone": "resilience",
+            "text": "Вы много сделали, но результата или награды пока нет. Что ближе?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 1,
+                        "text": "Разочарование есть, но оно не отменяет ценности работы."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 3,
+                        "text": "Если вложено много сил, справедливый итог должен быть виден."
+                  },
+                  {
+                        "label": "В",
+                        "points": 2,
+                        "text": "Трудно, но я возвращаюсь к вопросу качества своей части."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 0,
+                        "text": "Принимаю, что не все зависит от меня, и держу стандарт."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 4,
+                        "text": "Без результата или признания усилия кажутся бессмысленными."
+                  }
+            ]
+      },
+      {
+            "zone": "resilience",
+            "text": "Путь к целям чаще что делает с вашим внутренним состоянием?",
+            "options": [
+                  {
+                        "label": "А",
+                        "points": 3,
+                        "text": "Делает меня зависимее от оценки, признания и значимости."
+                  },
+                  {
+                        "label": "Б",
+                        "points": 2,
+                        "text": "Иногда усиливает тревогу, но я возвращаюсь к смыслу."
+                  },
+                  {
+                        "label": "В",
+                        "points": 0,
+                        "text": "Помогает становиться сильнее, спокойнее и полезнее."
+                  },
+                  {
+                        "label": "Г",
+                        "points": 4,
+                        "text": "Мое спокойствие зависит от статуса, вклада и правоты."
+                  },
+                  {
+                        "label": "Д",
+                        "points": 1,
+                        "text": "Напряжение бывает, но цели помогают взрослеть и держать стандарт."
+                  }
+            ]
+      }
+];
+
+    const results = [
+      {
+        min: 0,
+        max: 10,
+        size: "I",
+        name: "Эго почти не мешает",
+        art: "calm",
+        description: "По вашим ответам, эго редко перехватывает управление. Обычно вы способны учиться, слышать обратную связь, признавать вклад других людей и спокойно делать работу без немедленных почестей. В логике книги Холидея это близко к позиции ученика: человек не тратит слишком много сил на защиту образа себя и поэтому лучше видит реальность, результат и собственную цель.",
+        strength: "Сильная сторона: трезвость, обучаемость и внутренняя устойчивость. Вам легче возвращаться к делу, чем спорить с самой ситуацией.",
+        risk: "Возможный риск: не спутать тихое эго с привычкой уменьшать себя. Скромность помогает расти, но она не должна превращаться в отказ от голоса, границ и заслуженного места.",
+        note: "Этот результат - не итоговая характеристика вас как человека, а зеркало нескольких рабочих реакций. Если за тихим зеркалом стоит не зрелая устойчивость, а чрезмерная сдержанность, полезно понаблюдать, где вы слишком быстро уступаете свое место.",
+        nextSteps: [
+          "Проверяйте, где скромность помогает делу, а где мешает занять свое место.",
+          "Продолжайте брать обратную связь как материал для роста, а не как оценку личности.",
+          "Не отказывайтесь от амбиций: важно не уничтожить эго, а держать его в рабочем размере."
+        ],
+        finalThought: "Ключевая мысль: спокойное эго - сильная опора, если рядом с ним есть ясная цель и право проявляться."
+      },
+      {
+        min: 11,
+        max: 22,
+        size: "II",
+        name: "Эго в рабочем размере",
+        art: "working",
+        description: "По вашим ответам, эго в основном находится в рабочем размере. У вас есть амбиции, уверенность и желание результата, но они обычно не мешают трезво смотреть на себя, людей и ситуацию. Эго может включаться в стрессе, при критике или недооценке, но не становится главным руководителем поведения и не делает внутреннее спокойствие полностью зависимым от внешнего признания.",
+        strength: "Сильная сторона: баланс между уверенностью, обучаемостью и самообладанием. Такой размер эго помогает действовать, но не закрывает доступ к реальности.",
+        risk: "Возможный риск: при резком росте, новой роли, публичном успехе или конфликте эго может быстро увеличиваться. Именно в такие моменты Холидей советует возвращаться к работе, ученичеству и внутренним стандартам.",
+        note: "Этот результат - не оценка личности, а хороший повод заметить свои триггеры. Если не отслеживать напряженные моменты, рабочий факел может незаметно превратиться в защиту правоты, потребность в почестях или лишний контроль.",
+        nextSteps: [
+          "Отмечайте ситуации, где вам особенно хочется доказать, объяснить или получить признание.",
+          "Перед важной реакцией задавайте вопрос: сейчас я защищаю результат или образ себя?",
+          "Сохраняйте практику ученика даже там, где уже есть сильная экспертиза."
+        ],
+        finalThought: "Ключевая мысль: здоровая амбиция нужна; опасно только эго, которое начинает принимать решения вместо вас."
+      },
+      {
+        min: 23,
+        max: 36,
+        size: "III",
+        name: "Эго иногда перехватывает управление",
+        art: "noticeable",
+        description: "По вашим ответам, эго уже заметно участвует в некоторых реакциях: критика может задевать, признание становится важным, контроль успокаивает, а конфликт иногда превращается в защиту правоты. Часть удовлетворенности может зависеть не только от качества работы, но и от того, заметили ли вклад, признали ли правоту, получился ли внешний результат. При этом у вас еще есть важный ресурс - способность заметить происходящее и скорректировать курс.",
+        strength: "Сильная сторона: много энергии, амбиций и желания результата. Это может быть мощным двигателем, если энергия направлена в работу, а не в защиту самолюбия.",
+        risk: "Риск: часть сил уходит не на дело, а на поддержание образа себя. В логике Холидея это момент, когда эго начинает подменять реальную работу разговорами, контролем, сравнением или обидой.",
+        note: "Это не приговор и не диагноз. Скорее приглашение выбрать одну зону и понаблюдать: где я защищаю образ себя вместо того, чтобы увидеть факты, сделать работу и двигаться дальше?",
+        nextSteps: [
+          "Тренируйте паузу перед ответом на критику или несогласие.",
+          "В конфликте отделяйте цель от желания выиграть спор.",
+          "Выберите одну зону внимания и неделю наблюдайте, как именно там включается эго."
+        ],
+        finalThought: "Ключевая мысль: это не катастрофа, а хорошая точка для самонаблюдения. Эго уже видно, значит с ним можно работать."
+      },
+      {
+        min: 37,
+        max: 49,
+        size: "IV",
+        name: "Эго часто искажает решения",
+        art: "inflated",
+        description: "По вашим ответам, эго может часто влиять на решения и реакции. В таком режиме становится труднее учиться, делегировать, признавать ошибки, отпускать неработающие идеи и спокойно проходить неудачи. Самолюбие начинает конкурировать с результатом, а потребность быть правым, признанным или значимым может становиться сильнее пользы для дела и внутреннего равновесия.",
+        strength: "Сильная сторона: высокая включенность, энергия и желание влиять. Это ценный ресурс, если вернуть его из режима защиты в режим созидания.",
+        risk: "Риск: гиперконтроль, конфликты, усталость команды, потеря честной обратной связи. У Холидея это опасная зона успеха: человек начинает слышать похвалу лучше, чем факты.",
+        note: "Этот результат лучше читать не как ярлык, а как сигнал: в каких ситуациях защита образа себя может стоить слишком дорого. Полезно выбрать одну повторяющуюся реакцию и начать работать именно с ней.",
+        nextSteps: [
+          "Выберите одну повторяющуюся реакцию, которую нужно остановить первой: спор, контроль, обида или демонстрация значимости.",
+          "Попросите у надежного человека конкретную обратную связь: где рядом со мной люди замолкают?",
+          "Переводите контроль в систему: стандарты, роли, ритм проверки, обучение, а не ручное удержание всего на себе."
+        ],
+        finalThought: "Ключевая мысль: задача не в том, чтобы стать мягче любой ценой, а в том, чтобы дисциплина стала сильнее норова."
+      },
+      {
+        min: 50,
+        max: 60,
+        size: "V",
+        name: "Эго становится главным фильтром реальности",
+        art: "ruling",
+        description: "По вашим ответам, эго может становиться главным фильтром реальности. Критика воспринимается как нападение, успех - как доказательство исключительности, неудача - как несправедливость, контроль - как необходимость. В таком режиме человеку трудно слышать правду, если она не похожа на похвалу.",
+        strength: "Сильная сторона: мощная энергия, воля и желание влиять. Но сейчас эта энергия может работать против вас и против результата.",
+        risk: "Риск: изоляция, потеря реальности, конфликты, зависимость от почестей, гиперконтроль и разрушение доверия. В книге это тот момент, когда эго не просто мешает росту, а начинает сжигать человека и систему изнутри.",
+        note: "Это неприятный результат, но его не стоит читать как приговор. В логике книги это момент, когда особенно важно вернуться к фактам, труду, принципам и готовности снова стать учеником.",
+        nextSteps: [
+          "Не спорьте с результатом сразу. Возьмите паузу и перечитайте ответы позже.",
+          "Найдите один факт, который вы избегаете видеть, и одного человека, который может сказать правду без украшения.",
+          "Сфокусируйтесь на простом: работа, стандарты, ответственность, восстановление доверия и отказ от лишнего контроля."
+        ],
+        finalThought: "Ключевая мысль: вернуть управление себе можно только через факты, труд, принципы и готовность снова стать учеником."
+      }
+    ];
+
+    const form = document.querySelector("#testForm");
+    const answeredText = document.querySelector("#answeredText");
+    const progressBar = document.querySelector("#progressBar");
+    const errorBox = document.querySelector("#errorBox");
+    const result = document.querySelector("#result");
+    const layout = document.querySelector(".layout");
+    const completionText = document.querySelector("#completionText");
+
+    function renderQuestions() {
+      form.innerHTML = questions.map((question, index) => {
+        const answers = question.options.map((option) => `
+          <label class="answer">
+            <input type="radio" name="q${index}" value="${option.points}" aria-label="${option.label}. ${option.text}">
+            <span class="answer-text">
+              <strong>${option.label}.</strong>
+              <span class="answer-copy">${option.text}</span>
+            </span>
+          </label>
+        `).join("");
+
+        return `
+          <section class="question" data-question="${index}">
+            <div class="question-head">
+              <div class="number">${index + 1}</div>
+              <div>
+                <h2>${question.text}</h2>
+              </div>
+            </div>
+            <div class="answers">${answers}</div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function getState() {
+      const selected = Array.from(form.querySelectorAll("input[type='radio']:checked"));
+      const score = selected.reduce((sum, input) => sum + Number(input.value), 0);
+      const zoneScores = Object.fromEntries(Object.keys(zoneLabels).map((key) => [key, 0]));
+
+      selected.forEach((input) => {
+        const index = Number(input.name.replace("q", ""));
+        zoneScores[questions[index].zone] += Number(input.value);
+      });
+
+      return { answered: selected.length, score, zoneScores };
+    }
+
+    function updateProgress() {
+      const { answered } = getState();
+      answeredText.textContent = `Путь к зеркалу: ${answered} из ${questions.length}`;
+      progressBar.style.width = `${Math.round((answered / questions.length) * 100)}%`;
+      completionText.textContent = answered === questions.length
+        ? "Все ответы готовы. Можно посмотреть в зеркало и выбрать одну зону для наблюдения."
+        : `Осталось подсветить ${questions.length - answered} из ${questions.length} темных углов.`;
+
+      form.querySelectorAll(".answer").forEach((answer) => {
+        const input = answer.querySelector("input");
+        answer.classList.toggle("selected", input.checked);
+      });
+    }
+
+    function findResult(score) {
+      return results.find((item) => score >= item.min && score <= item.max);
+    }
+
+    function resultArtSvg(kind) {
+      const art = {
+        calm: {
+          title: "Маленький бирюзовый дракон",
+          src: "dragon-level-1.png"
+        },
+        working: {
+          title: "Зеленый дракон с теплым кристаллом",
+          src: "dragon-level-2.png"
+        },
+        noticeable: {
+          title: "Голубой дракон с ярким кристаллом",
+          src: "dragon-level-3.png"
+        },
+        inflated: {
+          title: "Красный дракон",
+          src: "dragon-level-4.png"
+        },
+        ruling: {
+          title: "Большой фиолетовый дракон",
+          src: "dragon-level-5.png"
+        }
+      };
+
+      const data = art[kind] || art.noticeable;
+
+      return `
+        <div class="dragon-window ${kind}" role="img" aria-label="${data.title}">
+          <img src="${data.src}" alt="">
+        </div>
+      `;
+    }
+
+    function clearMissing() {
+      form.querySelectorAll(".question").forEach((item) => item.classList.remove("missing"));
+      errorBox.classList.remove("visible");
+    }
+
+    function validate() {
+      clearMissing();
+      const missing = [];
+
+      questions.forEach((_, index) => {
+        if (!form.querySelector(`input[name="q${index}"]:checked`)) {
+          const question = form.querySelector(`[data-question="${index}"]`);
+          question.classList.add("missing");
+          missing.push(question);
+        }
+      });
+
+      if (missing.length > 0) {
+        errorBox.classList.add("visible");
+        missing[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        return false;
+      }
+
+      return true;
+    }
+
+    function showResult() {
+      if (!validate()) return;
+
+      const { score, zoneScores } = getState();
+      const data = findResult(score);
+      const sortedZones = Object.entries(zoneScores)
+        .map(([key, value]) => ({ key, value, label: zoneLabels[key] }))
+        .sort((a, b) => b.value - a.value);
+      const topZones = sortedZones.filter((zone) => zone.value === sortedZones[0].value);
+
+      document.querySelector("#resultTitle").textContent = `${data.size} — ${data.name}`;
+      document.querySelector("#resultScore").textContent = score;
+      document.querySelector("#resultArt").innerHTML = resultArtSvg(data.art);
+      document.querySelector("#resultDescription").textContent = data.description;
+      document.querySelector("#resultStrength").textContent = data.strength;
+      document.querySelector("#resultRisk").textContent = data.risk;
+      document.querySelector("#resultNote").textContent = data.note;
+      document.querySelector("#resultNextSteps").innerHTML = data.nextSteps
+        .map((step) => `<li>${step}</li>`)
+        .join("");
+      document.querySelector("#resultFinalThought").textContent = data.finalThought;
+      document.querySelector("#zonesSummary").textContent = topZones.length === 1
+        ? `Сильнее всего эго включается в зоне «${topZones[0].label}». Это не ярлык, а точка для наблюдения: именно там стоит чаще делать паузу и возвращаться к фактам.`
+        : `Сильнее всего эго включается в нескольких зонах: ${topZones.map((zone) => `«${zone.label}»`).join(", ")}. Это не ярлык, а подсказка, где стоит чаще делать паузу и возвращаться к фактам.`;
+      document.querySelector("#zones").innerHTML = sortedZones.map((zone) => `
+        <div class="zone-row">
+          <strong>${zone.label}</strong>
+          <div class="zone-track" aria-hidden="true"><span style="width: ${(zone.value / 12) * 100}%"></span></div>
+          <span>${zone.value} из 12</span>
+        </div>
+      `).join("");
+
+      result.classList.add("visible");
+      layout.classList.add("hidden");
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetTest() {
+      form.reset();
+      clearMissing();
+      result.classList.remove("visible");
+      layout.classList.remove("hidden");
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    renderQuestions();
+    updateProgress();
+
+    form.addEventListener("change", () => {
+      clearMissing();
+      updateProgress();
+    });
+
+    document.querySelector("#submitBtn").addEventListener("click", showResult);
+    document.querySelector("#resetBtn").addEventListener("click", resetTest);
+    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>
